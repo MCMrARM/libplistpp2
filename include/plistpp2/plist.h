@@ -112,6 +112,20 @@ namespace plist {
                 plist_array_set_item(wrapped, o.release(), index);
         }
 
+        void insert(size_t index, object const &o) {
+            if (type() != PLIST_ARRAY)
+                throw std::runtime_error("insert(index) not allowed on non-arrays");
+            plist_array_insert_item(wrapped, object(o).release(), index);
+        }
+        void insert(size_t index, object &&o) {
+            if (type() != PLIST_ARRAY)
+                throw std::runtime_error("insert(index) not allowed on non-arrays");
+            if (plist_get_parent(o.wrapped))
+                plist_array_insert_item(wrapped, o.copy().release(), index);
+            else
+                plist_array_insert_item(wrapped, o.release(), index);
+        }
+
         void set(c_string_key key, object const &o) {
             if (type() != PLIST_ARRAY)
                 throw std::runtime_error("set(key) not allowed on non-arrays");
